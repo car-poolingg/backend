@@ -1,0 +1,11 @@
+{
+  "name": "car-poolingg",
+  "version": "1.0.0",
+  "description": "Car-Pooling app backend for OAUSWEP200 project 2021/2022",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
