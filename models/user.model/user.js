@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-import { genSalt, hash, compare } from "bcryptjs";
+const { Schema, model } = require("mongoose");
+const { genSalt, hash, compare } = require("bcryptjs");
 const validator = require("validator");
 
 const UserSchema = new Schema(

@@ -1,5 +1,5 @@
-import "dotenv/config";
-import "express-async-errors";
+require("dotenv").config();
+require("express-async-errors");
 const express = require("express");
 
 const app = express();
@@ -31,7 +31,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-require("./controllers/user.controller/passportControllers");
+require("./controllers/user.controller/passportController");
 
 // Declare Routes
 // app.use("/api/v1/contact", require("./routes/contact/index"));
