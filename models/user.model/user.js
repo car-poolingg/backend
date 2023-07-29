@@ -24,9 +24,25 @@ const UserSchema = new Schema(
         phoneNumber: {
             type: Number,
         },
+        role: {
+            type: String,
+            default: "passenger",
+        },
+        googleId: {
+            type: String,
+        },
         password: {
             type: String,
             required: true,
+        },
+        isVerified: {
+            email: {
+                type: Boolean,
+                default: false,
+            },
+        },
+        verified: {
+            type: Date,
         },
     },
     { timestamps: true }

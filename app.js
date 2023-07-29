@@ -33,8 +33,10 @@ app.use(passport.session());
 
 require("./controllers/user.controller/passportController");
 
-// Declare Routes
-// app.use("/api/v1/contact", require("./routes/contact/index"));
+// User Routes
+app.use("/api/v1/auth", require("./routes/user/auth"));
+
+// Driver Routes
 
 app.use("/", (req, res) => {
     res.send("Welcome to OAU Car-Pooling...");

@@ -11,10 +11,9 @@ passport.use(
             callbackURL: process.env.GOOGLE_CALLBACK_URL,
         },
         async function (accessToken, refreshToken, profile, cb) {
-            const { email, given_name, family_name, name } = profile._json;
+            const { email, given_name, family_name } = profile._json;
 
             const userDetails = {
-                fullName: name,
                 googleId: profile.id,
                 email,
                 firstName: given_name,
@@ -24,7 +23,7 @@ passport.use(
                 },
                 verified: new Date(Date.now()),
             };
-            //check if the email is in the db
+
             const user = await User.findOne({ email, googleId: profile.id });
             if (user) {
                 return cb(null, user);
