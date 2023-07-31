@@ -1,12 +1,6 @@
 const SendEmail = require("./sendGrid");
 
-const sendVerificationEmail = async ({
-    name,
-    email,
-    verificationToken,
-    origin,
-}) => {
-    const verifyEmail = `${origin}/verify-email?email=${email}&token=${verificationToken}`;
+const sendVerificationCode = async ({ name, email, verificationToken }) => {
     const msg = {
         from: "gbemilekeogundipe@gmail.com",
         template_id: process.env.SENDGRID_VERIF_ID,
@@ -14,17 +8,14 @@ const sendVerificationEmail = async ({
             {
                 to: { email },
                 dynamic_template_data: {
-                    subject: "Email verification",
+                    subject: "Verification Code",
                     username: name,
-                    verify_email: verifyEmail,
+                    verify_email: verificationToken,
                 },
             },
         ],
     };
-
-    let result = await SendEmail.send(msg);
-    console.log(result);
-    return result;
+    return SendEmail.send(msg);
 };
 
-module.exports = sendVerificationEmail;
+module.exports = sendVerificationCode;

@@ -47,6 +47,9 @@ const UserSchema = new Schema(
         verificationToken: {
             type: String,
         },
+        tokenExpirationDate: {
+            type: Date,
+        },
         passwordToken: {
             type: String,
         },
