@@ -18,7 +18,7 @@ router.get("/google/car-poolingg", googleCallBack, NextFunction);
 router.post("/register", register);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
-router.post("/verify-phone", verifyEmail);
+router.post("/verify-email", verifyEmail);
 router.post("/reset-password", resetPassword);
 router.post("/logout", logout);
 
