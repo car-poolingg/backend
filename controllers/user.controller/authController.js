@@ -22,10 +22,9 @@ const register = async (req, res) => {
         throw new customApiError.BadRequestError("Email exists already");
     }
 
-    const number = Math.floor(Math.random() * 90000) + 10000;
+    const number = Math.floor(Math.random() * 9000) + 1000;
     const verificationToken = number.toString();
     const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
-    console.log(verificationToken);
 
     const user = await User.create({
         firstName,
@@ -36,14 +35,14 @@ const register = async (req, res) => {
         verificationToken: utils.createHash(verificationToken),
         tokenExpirationDate,
     });
-    //send email verification to user
+
     await utils.sendVerificationEmail({
         name: user.firstName,
         email: user.email,
         verificationToken,
     });
     res.status(201).json({
-        msg: "Success, Please check your email to verify your account.",
+        msg: "Success, Please check your email for the 4-digit token.",
     });
 };
 
@@ -80,17 +79,22 @@ const verifyEmail = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) throw new customApiError.UnAuthenticatedError("Invalid email");
 
-    if (utils.createHash(token) !== user.verificationToken) {
+    let currentDay = new Date(Date.now());
+
+    if (
+        user.verificationToken === utils.createHash(token) &&
+        user.tokenExpirationDate > currentDay
+    ) {
+        user.isVerified.email = true;
+        user.verified = new Date(Date.now());
+        user.verificationToken = "";
+        user.tokenExpirationDate = null;
+        await user.save();
+
+        res.status(200).json({ msg: "Code successfully verified." });
+    } else {
         throw new customApiError.UnAuthenticatedError("Invalid token");
     }
-    user.isVerified.email = true;
-    user.verified = new Date(Date.now());
-    user.verificationToken = "";
-    await user.save();
-
-    res.status(200).json({
-        msg: "Your email has been verified",
-    });
 };
 
 const forgotPassword = async (req, res) => {
@@ -105,11 +109,11 @@ const forgotPassword = async (req, res) => {
         throw new customApiError.NotFoundError("User does not exist");
     }
 
-    const number = Math.floor(Math.random() * 90000) + 10000;
+    const number = Math.floor(Math.random() * 9000) + 1000;
     const passwordToken = number.toString();
     let fiveMinutes = 1000 * 60 * 5;
     const passwordTokenExpirationDate = new Date(Date.now() + fiveMinutes);
-    console.log(passwordToken);
+
     await utils.sendResetPasswordEmail({
         name: user.firstName,
         email: user.email,
@@ -124,7 +128,7 @@ const forgotPassword = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-    const { password } = req.body;
+    const { password, email } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
         throw new customApiError.NotFoundError("User does not exist");
@@ -145,43 +149,23 @@ const resetPassword = async (req, res) => {
     });
 };
 
-const resendToken = async (req, res) => {
+const resendEmailToken = async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
-    const number = Math.floor(Math.random() * 90000) + 10000;
+    const number = Math.floor(Math.random() * 9000) + 1000;
     const verificationToken = number.toString();
     const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
-    console.log(verificationToken);
 
     await utils.sendVerificationEmail({
         name: user.firstName,
         email: user.email,
         verificationToken,
     });
+
     user.verificationToken = utils.createHash(verificationToken);
     user.tokenExpirationDate = tokenExpirationDate;
     await user.save();
+
     res.status(200).json({ msg: "Code successfully sent again." });
-};
-
-const verifyEmailToken = async (req, res) => {
-    const { token, email } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) throw new customApiError.UnAuthenticatedError("Invalid email");
-
-    let currentDay = new Date(Date.now());
-    if (
-        user.verificationToken === utils.createHash(token) &&
-        user.tokenExpirationDate > currentDay
-    ) {
-        user.isVerified = true;
-        user.verified = new Date(Date.now());
-        user.verificationToken = "";
-        user.tokenExpirationDate = null;
-        await user.save();
-        res.status(200).json({ msg: "Code successfully verified." });
-    } else {
-        throw new CustomError.UnAuthenticatedError("Invalid token");
-    }
 };
 
 const verifyPasswordToken = async (req, res) => {
@@ -194,14 +178,13 @@ const verifyPasswordToken = async (req, res) => {
         user.passwordToken === utils.createHash(token) &&
         user.passwordTokenExpirationDate > currentDay
     ) {
-        user.isVerified = true;
-        user.verified = new Date(Date.now());
         user.passwordToken = "";
         user.passwordTokenExpirationDate = null;
         await user.save();
+
         res.status(200).json({ msg: "Code successfully verified." });
     } else {
-        throw new CustomError.UnAuthenticatedError("Invalid token");
+        throw new customApiError.UnAuthenticatedError("Invalid token");
     }
 };
 
@@ -235,7 +218,6 @@ module.exports = {
     verifyEmail,
     resetPassword,
     logout,
-    resendToken,
-    verifyEmailToken,
+    resendEmailToken,
     verifyPasswordToken,
 };
