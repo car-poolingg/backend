@@ -21,8 +21,8 @@ const UserSchema = new Schema(
                 message: "Please provide a valid email",
             },
         },
-        phoneNumber: {
-            type: Number,
+        phone: {
+            type: String,
         },
         role: {
             type: String,
@@ -42,6 +42,18 @@ const UserSchema = new Schema(
             },
         },
         verified: {
+            type: Date,
+        },
+        verificationToken: {
+            type: String,
+        },
+        tokenExpirationDate: {
+            type: Date,
+        },
+        passwordToken: {
+            type: String,
+        },
+        passwordTokenExpirationDate: {
             type: Date,
         },
     },
