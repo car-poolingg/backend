@@ -35,6 +35,7 @@ require("./controllers/user.controller/passportController");
 
 // User Routes
 app.use("/api/v1/auth", require("./routes/user/auth"));
+app.use("/api/v1/driver-auth", require("./routes/driver/auth"));
 
 // Driver Routes
 

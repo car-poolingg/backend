@@ -34,10 +34,10 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { phone, password } = req.body;
+    if (!phone || !password) {
         throw new customApiError.BadRequestError(
-            "Please enter your email and password"
+            "Please enter your phone number and password"
         );
     }
     const driver = await Driver.findOne({ phone });
@@ -85,13 +85,13 @@ const verifyPhone = async (req, res) => {
 };
 
 const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-    if (!email) {
+    const { phone } = req.body;
+    if (!phone) {
         throw new customApiError.BadRequestError(
-            "Please provide your account's email address"
+            "Please provide your account's phone number"
         );
     }
-    const driver = await Driver.findOne({ email });
+    const driver = await Driver.findOne({ phone });
     if (!driver) {
         throw new customApiError.NotFoundError("Driver does not exist");
     }
@@ -101,22 +101,23 @@ const forgotPassword = async (req, res) => {
     let fiveMinutes = 1000 * 60 * 5;
     const passwordTokenExpirationDate = new Date(Date.now() + fiveMinutes);
 
-    await utils.sendResetPasswordEmail({
-        name: driver.firstName,
-        email: driver.email,
-        passwordToken,
+    await utils.sendSmsOTP({
+        code: passwordToken,
+        phone: driver.phone,
     });
 
     driver.passwordToken = utils.createHash(passwordToken);
     driver.passwordTokenExpirationDate = passwordTokenExpirationDate;
     await driver.save();
 
-    res.status(200).json({ msg: "Please check your email to reset password" });
+    res.status(200).json({
+        msg: "Please check your phone messages for password reset code",
+    });
 };
 
 const resetPassword = async (req, res) => {
-    const { password, email } = req.body;
-    const driver = await Driver.findOne({ email });
+    const { password, phone } = req.body;
+    const driver = await Driver.findOne({ phone });
     if (!driver) {
         throw new customApiError.NotFoundError("Driver does not exist");
     }
@@ -136,16 +137,16 @@ const resetPassword = async (req, res) => {
     });
 };
 
-const resendEmailToken = async (req, res) => {
-    const driver = await Driver.findOne({ email: req.body.email });
+const resendPhoneToken = async (req, res) => {
+    const { phone } = req.body;
+    const driver = await Driver.findOne({ phone });
     const number = Math.floor(Math.random() * 9000) + 1000;
     const verificationToken = number.toString();
     const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
 
-    await utils.sendVerificationEmail({
-        name: driver.firstName,
-        email: driver.email,
-        verificationToken,
+    await utils.sendSmsOTP({
+        code: verificationToken,
+        phone: driver.phone,
     });
 
     driver.verificationToken = utils.createHash(verificationToken);
@@ -156,8 +157,8 @@ const resendEmailToken = async (req, res) => {
 };
 
 const verifyPasswordToken = async (req, res) => {
-    const { token, email } = req.body;
-    const driver = await Driver.findOne({ email });
+    const { token, phone } = req.body;
+    const driver = await Driver.findOne({ phone });
     if (!driver) throw new customApiError.UnAuthenticatedError("Invalid email");
 
     let currentDay = new Date(Date.now());
@@ -176,22 +177,6 @@ const verifyPasswordToken = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-    if (req.isAuthenticated()) {
-        req.logout((err) => {
-            if (err) {
-                throw new customApiError.BadRequestError(
-                    "Something went wrong!"
-                );
-            }
-        });
-        req.session.destroy((err) => {
-            if (err) {
-                throw new customApiError.BadRequestError(
-                    "Something went wrong!"
-                );
-            }
-        });
-    }
     res.status(200).json({ msg: "You are logged out." });
 };
 
@@ -202,6 +187,6 @@ module.exports = {
     verifyPhone,
     resetPassword,
     logout,
-    resendEmailToken,
+    resendPhoneToken,
     verifyPasswordToken,
 };

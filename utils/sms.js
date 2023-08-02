@@ -3,13 +3,11 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require("twilio")(accountSid, authToken);
 
 const sendSmsOTP = async ({ code, phone }) => {
-    client.messages
-        .create({
-            body: `Hi!, your otp is ${code}`,
-            from: process.env.PHONE_NUMBER,
-            to: phone,
-        })
-        .then((message) => console.log(message.sid));
+    await client.messages.create({
+        body: `Hi!, your otp is ${code}`,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: phone,
+    });
 };
 
 module.exports = sendSmsOTP;
