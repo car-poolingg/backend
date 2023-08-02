@@ -62,7 +62,7 @@ const login = async (req, res) => {
         throw new customApiError.UnAuthenticatedError("Incorrect Password");
     }
     //check whether user is verified
-    if (!user.isVerified) {
+    if (!user.isVerified.email) {
         throw new customApiError.UnAuthenticatedError(
             "Check your email to verify your account"
         );

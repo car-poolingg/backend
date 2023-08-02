@@ -7,6 +7,7 @@ const sendContactUsEmail = require("./sendContactUsEmail");
 const cloudinary = require("./cloudinary");
 const createHash = require("./createHash");
 const checkPermission = require("./checkPermission");
+const sendSmsOTP = require("./sms");
 
 module.exports = {
     createTokenUser,
@@ -19,4 +20,5 @@ module.exports = {
     createHash,
     checkPermission,
     cloudinary,
+    sendSmsOTP,
 };
