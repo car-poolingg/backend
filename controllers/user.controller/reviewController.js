@@ -1,29 +1,19 @@
-// contains the logic that processes the requests and interacts with the models
-const mongoose = require('mongoose')
-const Review = require('.../models/user.model/review.js');
-const User = require('.../models/user.model/user.js');
+const Review = require("../../models/user.model/review.js");
+const User = require("../../models/user.model/user.js");
+const customApiError = require("../../errors");
 
-async function reviewController(req,res){
-    try{
+const createReview = async (req, res) => {
+    const {
+        body: { comment, rating, driver },
+        user: { userId },
+    } = req;
 
-        const { comment, rating, userId} = req.body
-        const user = User.findById(userId)
-        if(!user){
-            return res.status(404).json({error: 'user not found '})
-        }
+    const user = await User.findById(userId);
+    if (!user) throw new customApiError.NotFoundError("User not found.");
 
-        const review = new Review({
-            comment,rating,userId
-        })
+    const review = await Review.create({ comment, rating, userId, driver });
 
-        review.save()
+    res.status(201).json({ review, msg: "Review submitted successfully." });
+};
 
-        res.status(201).json({ msg: "Review submitted successfully."});
-    }catch(error){
-        res.status(500).json({error: 'internal server errror'})
-    }
-    
-
-}
-
-module.exports ={reviewController}
+module.exports = { createReview };

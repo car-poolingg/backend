@@ -11,8 +11,8 @@ const userAuthentication = async (req, res, next) => {
         }
         const token = authHeader.split(" ")[1];
 
-        const { userId, username, role } = isTokenValid(token);
-        req.user = { userId, username, role };
+        const { userId, email, role } = isTokenValid(token);
+        req.user = { userId, email, role };
 
         return next();
     } catch (error) {

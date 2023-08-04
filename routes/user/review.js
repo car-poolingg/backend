@@ -1,8 +1,11 @@
-// handles the incoming HTTP requests related to the corresponding entity
-
 const express = require("express");
 const router = express.Router();
-const { reviewController }= require("../../controllers/user.controller/reviewController.js")
+const userAuthentication = require("../../middlewares/user.auth");
 
-router.post('/postreview', reviewController)
+const {
+    createReview,
+} = require("../../controllers/user.controller/reviewController.js");
 
+router.post("/", userAuthentication, createReview);
+
+module.exports = router;
