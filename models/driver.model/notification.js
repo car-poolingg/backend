@@ -2,9 +2,9 @@ const { Schema, model, Types } = require("mongoose");
 
 const NotificationSchema = new Schema(
     {
-        user: {
+        request: {
             type: Types.ObjectId,
-            ref: "User",
+            ref: "Request",
             required: true,
         },
         title: {
@@ -13,6 +13,15 @@ const NotificationSchema = new Schema(
         },
         information: {
             type: String,
+            required: true,
+        },
+        status: {
+            type: String,
+            default: "NULL",
+        },
+        driver: {
+            type: Types.ObjectId,
+            ref: "Driver",
             required: true,
         },
     },
