@@ -6,7 +6,7 @@ const sendNotificationEmail = require("./sendNotificationEmail");
 const sendContactUsEmail = require("./sendContactUsEmail");
 const cloudinary = require("./cloudinary");
 const createHash = require("./createHash");
-const checkPermission = require("./checkPermission");
+const { checkPermission, driverPermission } = require("./checkPermission");
 const sendSmsOTP = require("./sms");
 
 module.exports = {
@@ -19,6 +19,7 @@ module.exports = {
     sendContactUsEmail,
     createHash,
     checkPermission,
+    driverPermission,
     cloudinary,
     sendSmsOTP,
 };

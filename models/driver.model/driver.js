@@ -76,6 +76,10 @@ const DriverSchema = new Schema(
         vehicleColor: {
             type: String,
         },
+        averageRating: {
+            type: Number,
+            default: 0,
+        },
         isVerified: {
             phone: {
                 type: Boolean,
