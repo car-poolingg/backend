@@ -5,6 +5,7 @@ const customApiError = require("../../errors");
 const DriverNotification = require("../../models/driver.model/notification");
 const UserNotification = require("../../models/user.model/notification");
 const Request = require("../../models/user.model/request");
+const UserSubscription = require("../../models/user.model/subscription");
 
 const postRide = async (req, res) => {
     const driver = await Driver.findById(req.user.userId);
@@ -44,7 +45,22 @@ const updateRideRequest = async (req, res) => {
         information: message,
     });
 
-    // and a web push notification
+    // and a web push notification for passenger
+    // a web push notification for driver
+    const payload = {
+        title,
+        body: message,
+        icon: "",
+    };
+    const userSubscription = await UserSubscription.findOne({
+        user: request.user,
+    });
+    if (!userSubscription)
+        throw new customApiError.NotFoundError("User's subscription not found");
+
+    const { endpoint, expirationTime, keys } = userSubscription;
+    const subscription = { endpoint, expirationTime, keys };
+    await utils.subscribe({ subscription, payload });
 
     res.status(200).json({
         driverNotification,

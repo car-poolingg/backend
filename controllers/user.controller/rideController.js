@@ -3,6 +3,8 @@ const DriverNotification = require("../../models/driver.model/notification");
 const Request = require("../../models/user.model/request");
 const User = require("../../models/user.model/user");
 const customApiError = require("../../errors");
+const utils = require("../../utils");
+const DriverSubscription = require("../../models/driver.model/subscription");
 
 const findRide = async (req, res) => {
     return new Date(date + "GMT+0");
@@ -50,12 +52,29 @@ const sendRideRequest = async (req, res) => {
         information,
         driver: ride.createdBy,
     });
-    // a web push notification
+
+    // a web push notification for driver
+    const payload = {
+        title,
+        body: information,
+        icon: "",
+    };
+    const driverSubscription = await DriverSubscription.findOne({
+        driver: ride.createdBy,
+    });
+    if (!driverSubscription)
+        throw new customApiError.NotFoundError(
+            "Driver's subscription not found"
+        );
+
+    const { endpoint, expirationTime, keys } = driverSubscription;
+    const subscription = { endpoint, expirationTime, keys };
+    await utils.subscribe({ subscription, payload });
 
     res.status(200).json({
         notification,
         request,
-        message: "Success",
+        message: "Notification Sent to Driver",
     });
 };
 

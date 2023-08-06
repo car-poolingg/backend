@@ -9,7 +9,6 @@ const RequestSchema = new Schema(
         },
         status: {
             type: String,
-            required: true,
             default: "pending",
         },
         user: {

@@ -19,19 +19,4 @@ const fetchNotifications = async (req, res) => {
     // });
 };
 
-const updateNotification = async (req, res) => {
-    // const {
-    //     user: { _id: userId },
-    //     params: { id: NotificationId },
-    //     query: { read }
-    // } = req;
-    // const notifications = await Notification.findOne({ _id: NotificationId, userId })
-    // notifications.read = read
-    // await notifications.save()
-    // res.status(200).json({
-    //     notifications,
-    //     message: "Success",
-    // });
-};
-
-module.exports = { fetchNotifications, updateNotification };
+module.exports = { fetchNotifications };
