@@ -1,6 +1,4 @@
-// This directory contains individual model files (e.g., user.model.js, carpool.model.js, review.model.js) that define the schemas for different entities in your application
-
-const { Schema, model } = require("mongoose");
+const { Schema, model, Types } = require("mongoose");
 
 const reviewSchema = new Schema(
     {
@@ -10,16 +8,18 @@ const reviewSchema = new Schema(
         rating: {
             type: Number,
         },
-        
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
+        userId: {
+            type: Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        driver: {
+            type: Types.ObjectId,
+            ref: "Driver",
+            required: true,
+        },
     },
     { timestamps: true }
 );
 
-
-
-
-module.exports = mongoose.model("Review", reviewSchema);
+module.exports = model("Review", reviewSchema);

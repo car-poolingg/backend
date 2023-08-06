@@ -33,10 +33,11 @@ app.use(passport.session());
 
 require("./controllers/user.controller/passportController");
 // #
-const Review = require('./routes/user/review');
 
 // User Routes
 app.use("/api/v1/auth", require("./routes/user/auth"));
+app.use("/api/v1/driver-auth", require("./routes/driver/auth"));
+app.use("/api/v1/review", require("./routes/user/review"));
 
 // Driver Routes
 
@@ -45,7 +46,6 @@ app.use("/", (req, res) => {
 });
 app.use(require("./middlewares/notFoundMiddleware"));
 app.use(require("./middlewares/errorHandlerMiddleware"));
-app.use('/review',Review)
 
 const connectDB = require("./db/database");
 const PORT = process.env.PORT || 4400;

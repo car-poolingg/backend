@@ -1,273 +1,192 @@
-const passport = require("passport");
-const User = require("../../models/user.model/user");
+const Driver = require("../../models/driver.model/driver");
 const customApiError = require("../../errors");
+const crypto = require("crypto");
+const utils = require("../../utils");
 
-const google = passport.authenticate("google", { scope: ["profile", "email"] });
-const googleCallBack = passport.authenticate("google", {
-    // successRedirect: "",
-    failureRedirect: "",
-    successFlash: true,
-});
-const NextFunction = async (req, res) => {
-    res.status(200).json({ msg: "You are logged in" });
-};
+const register = async (req, res) => {
+    const { city, email, phone, password } = req.body;
 
-const Register = async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
-    //check for email
-    const isEmail = await User.findOne({ email });
-    if (isEmail) {
-        throw new customApiError.BadRequestError("Email exists already");
+    const isPhone = await Driver.findOne({ phone });
+    if (isPhone) {
+        throw new customApiError.BadRequestError("Phone number exists already");
     }
-    //check for first user
-    const isFirstUser = (await User.countDocuments()) === 0;
-    const role = isFirstUser ? "admin" : "user";
-    const number = Math.floor(Math.random() * 90000) + 10000;
+
+    const number = Math.floor(Math.random() * 9000) + 1000;
     const verificationToken = number.toString();
     const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
-    console.log(verificationToken);
 
-    const user = await User.create({
-        firstName,
-        lastName,
+    const driver = await Driver.create({
         email,
+        phone,
         password,
-        verificationToken: utils.CreateHash(verificationToken),
+        city,
+        verificationToken: utils.createHash(verificationToken),
         tokenExpirationDate,
-        role,
-        fiscalCode,
-        interests,
-        loyaltyCode,
-    });
-    //send email verification to user
-    await utils.sendVerificationCode({
-        name: user.firstName,
-        email: user.email,
-        verificationToken,
     });
 
-    const tokenUser = utils.CreateToken(user);
-    const refreshToken = crypto.randomBytes(40).toString("hex");
-    const userAgent = req.headers["user-agent"];
-    const ip = req.ip;
-    const userToken = { refreshToken, userAgent, ip, user: user._id };
-    await Token.create(userToken);
-    utils.attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-
+    await utils.sendSmsOTP({
+        code: verificationToken,
+        phone: driver.phone,
+    });
     res.status(201).json({
-        msg: "Success, Please check your email for the verification code",
+        msg: "Success, Please check your phone messages for the 4-digit token.",
     });
 };
 
-//Set token expiration time
-
-const Login = async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
+const login = async (req, res) => {
+    const { phone, password } = req.body;
+    if (!phone || !password) {
         throw new customApiError.BadRequestError(
-            "Please enter your email and password"
+            "Please enter your phone number and password"
         );
     }
-    const user = await User.findOne({ email });
-    if (!user) {
-        throw new customApiError.UnAuthenticatedError("Invalid Email");
+    const driver = await Driver.findOne({ phone });
+    if (!driver) {
+        throw new customApiError.UnAuthenticatedError("Invalid phone number");
     }
-    const isPassword = await user.ComparePassword(password);
+    const isPassword = await driver.ComparePassword(password);
     if (!isPassword) {
         throw new customApiError.UnAuthenticatedError("Incorrect Password");
     }
-    //check whether user is verified
-    if (!user.isVerified) {
+
+    if (!driver.isVerified.phone) {
         throw new customApiError.UnAuthenticatedError(
-            "Check your email to verify your account"
+            "Your phone number hasn't been verified yet!"
         );
     }
-    const tokenUser = utils.CreateToken(user);
-    let refreshToken = "";
-    const existingToken = await Token.findOne({ user: user._id });
-    if (existingToken) {
-        const { isValid } = existingToken;
-        if (!isValid) {
-            throw new customApiError.UnAuthenticatedError("Invalid Details");
-        }
-        refreshToken = existingToken.refreshToken;
-        //attachCookies
-        utils.attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-        res.status(200).json({ user: tokenUser });
-        return;
-    }
-    refreshToken = crypto.randomBytes(40).toString("hex");
-    const userAgent = req.headers["user-agent"];
-    const ip = req.ip;
-    const userToken = { refreshToken, userAgent, ip, user: user._id };
-    //create token
-    await Token.create(userToken);
-    //attachcookiestoresponse
-    utils.attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-    res.status(200).json({ user: tokenUser });
+    const tokenDriver = utils.createTokenUser(driver);
+    const token = utils.createJWT(tokenDriver);
+
+    res.status(200).json({ driver: tokenDriver, token });
     return;
 };
 
-const Logout = async (req, res) => {
-    await Token.findOneAndDelete({ user: req.user.userId });
-    res.cookie("accessApp", "logout", {
-        httpOnly: true,
-        secure: false,
-        expires: new Date(Date.now()),
-    });
-    res.cookie("refreshApp", "logout", {
-        httpOnly: true,
-        secure: false,
-        expires: new Date(Date.now()),
-    });
-    res.status(200).json({ msg: "You are logged out." });
-};
+const verifyPhone = async (req, res) => {
+    const { phone, token } = req.body;
+    const driver = await Driver.findOne({ phone });
+    if (!driver) throw new customApiError.UnAuthenticatedError("Invalid phone");
 
-const ResendCode = async (req, res) => {
-    const user = await User.findById(req.user.userId);
-    const number = Math.floor(Math.random() * 90000) + 10000;
-    const verificationToken = number.toString();
-    const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
-    console.log(verificationToken);
-
-    await utils.sendVerificationCode({
-        name: user.firstName,
-        email: user.email,
-        verificationToken,
-    });
-    user.verificationToken = utils.CreateHash(verificationToken);
-    user.tokenExpirationDate = tokenExpirationDate;
-    await user.save();
-    res.status(200).json({ msg: "Code successfully sent again." });
-};
-
-const VerifyToken = async (req, res) => {
-    const { token } = req.body;
-    const user = await User.findById(req.user.userId);
-    if (!user) {
-        throw new customApiError.UnAuthenticatedError("Invalid email");
-    }
     let currentDay = new Date(Date.now());
+
     if (
-        user.verificationToken === utils.CreateHash(token) &&
-        user.tokenExpirationDate > currentDay
+        driver.verificationToken === utils.createHash(token) &&
+        driver.tokenExpirationDate > currentDay
     ) {
-        user.isVerified = true;
-        user.verified = new Date(Date.now());
-        user.verificationToken = "";
-        user.tokenExpirationDate = null;
-        await user.save();
+        driver.isVerified.phone = true;
+        driver.verified = new Date(Date.now());
+        driver.verificationToken = "";
+        driver.tokenExpirationDate = null;
+        await driver.save();
+
         res.status(200).json({ msg: "Code successfully verified." });
     } else {
         throw new customApiError.UnAuthenticatedError("Invalid token");
     }
 };
 
-const ForgotPassword = async (req, res) => {
-    const { email } = req.body;
-    if (!email) {
-        throw new customApiError.BadRequestError("Please provide your email");
+const forgotPassword = async (req, res) => {
+    const { phone } = req.body;
+    if (!phone) {
+        throw new customApiError.BadRequestError(
+            "Please provide your account's phone number"
+        );
     }
-    const user = await User.findOne({ email });
-    if (!user) {
-        throw new customApiError.NotFoundError("Please enter a valid email");
+    const driver = await Driver.findOne({ phone });
+    if (!driver) {
+        throw new customApiError.NotFoundError("Driver does not exist");
     }
-    //create cookies
-    const tokenUser = utils.CreateToken(user);
-    //check for token
-    let refreshToken = "";
-    const tokenExists = await Token.findOne({ user: user._id });
-    if (tokenExists) {
-        const { isValid } = tokenExists;
-        if (!isValid) {
-            throw new customApiError.UnAuthenticatedError("Invalid Details");
-        }
-        refreshToken = tokenExists.refreshToken;
-        utils.attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-        const number = Math.floor(Math.random() * 90000) + 10000;
-        const verificationToken = number.toString();
 
-        const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
+    const number = Math.floor(Math.random() * 9000) + 1000;
+    const passwordToken = number.toString();
+    let fiveMinutes = 1000 * 60 * 5;
+    const passwordTokenExpirationDate = new Date(Date.now() + fiveMinutes);
 
-        await utils.sendVerificationCode({
-            name: user.firstName,
-            email: user.email,
-            verificationToken,
-        });
-        user.verificationToken = utils.CreateHash(verificationToken);
-        user.tokenExpirationDate = tokenExpirationDate;
-        await user.save();
-        res.status(StatusCodes.OK).json({
-            msg: "Check your email for the otp",
-        });
-        return;
-    }
-    refreshToken = crypto.randomBytes(40).toString("hex");
-    const userAgent = req.headers["user-agent"];
-    const ip = req.ip;
-    const userToken = { refreshToken, userAgent, ip, user: user._id };
-    await Token.create(userToken);
-    utils.attachCookiesToResponse({ res, user: tokenUser, refreshToken });
-    const number = Math.floor(Math.random() * 90000) + 10000;
-    const verificationToken = number.toString();
-
-    const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
-
-    await utils.sendVerificationCode({
-        name: user.firstName,
-        email: user.email,
-        verificationToken,
+    await utils.sendSmsOTP({
+        code: passwordToken,
+        phone: driver.phone,
     });
-    user.verificationToken = utils.CreateHash(verificationToken);
-    user.tokenExpirationDate = tokenExpirationDate;
-    await user.save();
-    res.status(StatusCodes.OK).json({ msg: "Check your email for the otp" });
+
+    driver.passwordToken = utils.createHash(passwordToken);
+    driver.passwordTokenExpirationDate = passwordTokenExpirationDate;
+    await driver.save();
+
+    res.status(200).json({
+        msg: "Please check your phone messages for password reset code",
+    });
 };
 
-const ResetPassword = async (req, res) => {
-    const { password } = req.body;
-    const user = await User.findById(req.user.userId);
-    if (!user) {
-        throw new customApiError.NotFoundError("User does not exist");
+const resetPassword = async (req, res) => {
+    const { password, phone } = req.body;
+    const driver = await Driver.findOne({ phone });
+    if (!driver) {
+        throw new customApiError.NotFoundError("Driver does not exist");
     }
     if (!password) {
         throw new customApiError.BadRequestError(
             "Please enter your new password"
         );
     }
-    user.password = password;
-    await user.save();
-    res.status(200).json({ msg: "Password reset is successful" });
+
+    driver.password = password;
+    driver.passwordToken = null;
+    driver.passwordTokenExpirationDate = null;
+    await driver.save();
+
+    res.status(200).json({
+        msg: "Password reset is successful",
+    });
+};
+
+const resendPhoneToken = async (req, res) => {
+    const { phone } = req.body;
+    const driver = await Driver.findOne({ phone });
+    const number = Math.floor(Math.random() * 9000) + 1000;
+    const verificationToken = number.toString();
+    const tokenExpirationDate = new Date(Date.now() + 5 * 60 * 1000);
+
+    await utils.sendSmsOTP({
+        code: verificationToken,
+        phone: driver.phone,
+    });
+
+    driver.verificationToken = utils.createHash(verificationToken);
+    driver.tokenExpirationDate = tokenExpirationDate;
+    await driver.save();
+
+    res.status(200).json({ msg: "Code successfully sent again." });
+};
+
+const verifyPasswordToken = async (req, res) => {
+    const { token, phone } = req.body;
+    const driver = await Driver.findOne({ phone });
+    if (!driver) throw new customApiError.UnAuthenticatedError("Invalid email");
+
+    let currentDay = new Date(Date.now());
+    if (
+        driver.passwordToken === utils.createHash(token) &&
+        driver.passwordTokenExpirationDate > currentDay
+    ) {
+        driver.passwordToken = "";
+        driver.passwordTokenExpirationDate = null;
+        await driver.save();
+
+        res.status(200).json({ msg: "Code successfully verified." });
+    } else {
+        throw new customApiError.UnAuthenticatedError("Invalid token");
+    }
 };
 
 const logout = async (req, res) => {
-    if (req.isAuthenticated()) {
-        req.logout((err) => {
-            if (err) {
-                throw new customApiError.BadRequestError(
-                    "Something went wrong!"
-                );
-            }
-        });
-        req.session.destroy((err) => {
-            if (err) {
-                throw new customApiError.BadRequestError(
-                    "Something went wrong!"
-                );
-            }
-        });
-    }
     res.status(200).json({ msg: "You are logged out." });
 };
 
 module.exports = {
-    google,
-    googleCallBack,
-    NextFunction,
     register,
     login,
     forgotPassword,
-    verifyEmail,
+    verifyPhone,
     resetPassword,
     logout,
+    resendPhoneToken,
+    verifyPasswordToken,
 };

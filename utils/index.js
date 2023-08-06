@@ -5,8 +5,10 @@ const sendResetPasswordEmail = require("./sendResetPasswordMail");
 const sendNotificationEmail = require("./sendNotificationEmail");
 const sendContactUsEmail = require("./sendContactUsEmail");
 const cloudinary = require("./cloudinary");
+const subscribe = require("./webPush");
 const createHash = require("./createHash");
-const checkPermission = require("./checkPermission");
+const { checkPermission, driverPermission } = require("./checkPermission");
+const sendSmsOTP = require("./sms");
 
 module.exports = {
     createTokenUser,
@@ -18,5 +20,8 @@ module.exports = {
     sendContactUsEmail,
     createHash,
     checkPermission,
+    driverPermission,
     cloudinary,
+    sendSmsOTP,
+    subscribe,
 };
