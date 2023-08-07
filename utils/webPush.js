@@ -1,5 +1,4 @@
 const webpush = require("web-push");
-const { subscribe } = require("../routes/user/auth");
 
 const publicVapidKey = process.env.PUBLICVAPIDKEY;
 const privateVapidKey = process.env.PRIVATEVAPIDKEY;
@@ -10,8 +9,12 @@ webpush.setVapidDetails(
     privateVapidKey
 );
 
-const subscribe = async ({ subscription, payload }) => {
-    return webpush.sendNotification(subscription, JSON.stringify(payload));
+const subscribe = ({ subscription, payload }) => {
+    let Payload = JSON.stringify(payload);
+    webpush
+        .sendNotification(subscription, Payload)
+        .catch((err) => console.error(err));
+    return;
 };
 
 module.exports = subscribe;

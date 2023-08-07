@@ -39,6 +39,15 @@ const sendRideRequest = async (req, res) => {
         user: { userId },
     } = req;
 
+    const driverSubscription = await DriverSubscription.findOne({
+        driver: ride.createdBy,
+    });
+    if (!driverSubscription)
+        throw new customApiError.NotFoundError(
+            "Driver's subscription not found"
+        );
+    const { endpoint, expirationTime, keys } = driverSubscription;
+
     const ride = await Ride.findById(rideId);
     if (!ride) throw new customApiError.NotFoundError("Invalid Ride");
 
@@ -55,19 +64,10 @@ const sendRideRequest = async (req, res) => {
 
     // a web push notification for driver
     const payload = {
-        title,
-        body: information,
-        icon: "",
+        title: "Car Pooling",
+        body: "Notified by Leksyking",
+        icon: "https://th.bing.com/th/id/R.cc13b308f0ffa05b9e8374133a214a9f?rik=MYSllDTSs0MwKw&pid=ImgRaw&r=0",
     };
-    const driverSubscription = await DriverSubscription.findOne({
-        driver: ride.createdBy,
-    });
-    if (!driverSubscription)
-        throw new customApiError.NotFoundError(
-            "Driver's subscription not found"
-        );
-
-    const { endpoint, expirationTime, keys } = driverSubscription;
     const subscription = { endpoint, expirationTime, keys };
     await utils.subscribe({ subscription, payload });
 

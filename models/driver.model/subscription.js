@@ -1,6 +1,6 @@
 const { Schema, model, Types } = require("mongoose");
 
-const SubscriptionSchema = new mongoose.Schema({
+const DriverSubscriptionSchema = new Schema({
     driver: {
         type: Types.ObjectId,
         ref: "Driver",
@@ -26,4 +26,4 @@ const SubscriptionSchema = new mongoose.Schema({
     },
 });
 
-module.exports = model("Subscription", SubscriptionSchema);
+module.exports = model("DriverSubscription", DriverSubscriptionSchema);

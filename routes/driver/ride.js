@@ -7,6 +7,11 @@ const {
     updateRideRequest,
 } = require("../../controllers/driver.controller/rideController");
 
-router.post("/", driverAuthentication, postRide);
+router
+    .route("/")
+    .post(driverAuthentication, postRide)
+    .patch(driverAuthentication, updateRideRequest);
+
+module.exports = router;
 
 module.exports = router;
