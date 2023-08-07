@@ -47,18 +47,21 @@ const updateRideRequest = async (req, res) => {
 
     // and a web push notification for passenger
     // a web push notification for driver
-    const payload = {
-        title,
-        body: message,
-        icon: "",
-    };
+
     const userSubscription = await UserSubscription.findOne({
         user: request.user,
     });
     if (!userSubscription)
         throw new customApiError.NotFoundError("User's subscription not found");
 
+    // a web push notification for driver
     const { endpoint, expirationTime, keys } = userSubscription;
+    const payload = {
+        title: "Car Pooling",
+        body: "Notified by Leksyking",
+        icon: "https://th.bing.com/th/id/R.cc13b308f0ffa05b9e8374133a214a9f?rik=MYSllDTSs0MwKw&pid=ImgRaw&r=0",
+    };
+
     const subscription = { endpoint, expirationTime, keys };
     await utils.subscribe({ subscription, payload });
 

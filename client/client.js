@@ -6,6 +6,8 @@ if ("serviceWorker" in navigator) {
     send().catch((err) => console.error(err));
 }
 
+let token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGM4ODlhYmU1ZmY4YjdhN2NjNDgwMWUiLCJlbWFpbCI6ImdiZW1pbGVrZW9ndW5kaXBlMDdAZ21haWwuY29tIiwicm9sZSI6InBhc3NlbmdlciIsImlhdCI6MTY5MTE1NTQ5MSwiZXhwIjoxNjkzNzQ3NDkxfQ.dXzM2EfaU79ht0afTdXFY-6zlUFK5bKp17FpU9Z5X0w";
 // Register SW, Register Push, Send Push
 async function send() {
     // Register Service Worker
@@ -29,6 +31,7 @@ async function send() {
         method: "POST",
         body: JSON.stringify(subscription),
         headers: {
+            Authorization: `Bearer ${token}`,
             "content-type": "application/json",
         },
     });

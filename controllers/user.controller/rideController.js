@@ -46,7 +46,6 @@ const sendRideRequest = async (req, res) => {
         throw new customApiError.NotFoundError(
             "Driver's subscription not found"
         );
-    const { endpoint, expirationTime, keys } = driverSubscription;
 
     const ride = await Ride.findById(rideId);
     if (!ride) throw new customApiError.NotFoundError("Invalid Ride");
@@ -63,6 +62,7 @@ const sendRideRequest = async (req, res) => {
     });
 
     // a web push notification for driver
+    const { endpoint, expirationTime, keys } = driverSubscription;
     const payload = {
         title: "Car Pooling",
         body: "Notified by Leksyking",

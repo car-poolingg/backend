@@ -7,6 +7,9 @@ const {
     sendRideRequest,
 } = require("../../controllers/user.controller/rideController");
 
-router.route("/").get(userAuthentication, findRide).post(sendRideRequest);
+router
+    .route("/")
+    .get(userAuthentication, findRide)
+    .post(userAuthentication, sendRideRequest);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const { Schema, model, Types } = require("mongoose");
 
 const UserSubscriptionSchema = new Schema({
-    userId: {
+    user: {
         type: Types.ObjectId,
         ref: "User",
         required: true,
