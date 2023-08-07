@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const driverAuthentication = require("../../middlewares/drive.auth");
+const driverAuthentication = require("../../middlewares/driver.auth");
 
 const subscribe = require("../../controllers/driver.controller/subscriptionController");
 

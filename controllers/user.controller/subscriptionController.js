@@ -3,12 +3,23 @@ const UserSubscription = require("../../models/user.model/subscription");
 const subscribe = async (req, res) => {
     const { endpoint, expirationTime, keys } = req.body;
 
-    const subscription = await UserSubscription.create({
+    let subscription = await UserSubscription.find({
         user: req.user.userId,
-        endpoint,
-        expirationTime,
-        keys,
     });
+    if (subscription) {
+        subscription = await UserSubscription.findOneAndUpdate(
+            { user: req.user.userId },
+            req.body,
+            { new: true, runValidators: true }
+        );
+    } else {
+        subscription = await UserSubscription.create({
+            user: req.user.userId,
+            endpoint,
+            expirationTime,
+            keys,
+        });
+    }
 
     res.status(201).json({
         subscription,

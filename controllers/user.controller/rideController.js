@@ -39,6 +39,9 @@ const sendRideRequest = async (req, res) => {
         user: { userId },
     } = req;
 
+    const ride = await Ride.findById(rideId);
+    if (!ride) throw new customApiError.NotFoundError("Invalid Ride");
+
     const driverSubscription = await DriverSubscription.findOne({
         driver: ride.createdBy,
     });
@@ -46,9 +49,6 @@ const sendRideRequest = async (req, res) => {
         throw new customApiError.NotFoundError(
             "Driver's subscription not found"
         );
-
-    const ride = await Ride.findById(rideId);
-    if (!ride) throw new customApiError.NotFoundError("Invalid Ride");
 
     const request = await Request.create({
         ride: rideId,

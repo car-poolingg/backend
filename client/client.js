@@ -13,7 +13,7 @@ async function send() {
     // Register Service Worker
     console.log("Registering service worker...");
     const register = await navigator.serviceWorker.register("/worker.js", {
-        scope: "/",
+        scope: "/api/v1",
     });
     console.log("Service Worker Registered...");
 
