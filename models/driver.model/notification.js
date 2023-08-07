@@ -1,6 +1,6 @@
 const { Schema, model, Types } = require("mongoose");
 
-const NotificationSchema = new Schema(
+const DriverNotificationSchema = new Schema(
     {
         request: {
             type: Types.ObjectId,
@@ -28,4 +28,4 @@ const NotificationSchema = new Schema(
     { timestamps: true }
 );
 
-module.exports = model("Notification", NotificationSchema);
+module.exports = model("DriverNotification", DriverNotificationSchema);

@@ -10,9 +10,14 @@ const UserSubscription = require("../../models/user.model/subscription");
 const postRide = async (req, res) => {
     const driver = await Driver.findById(req.user.userId);
     utils.driverPermission(req.user, driver);
-    // 2020-03-12
-    // HH:MM:SS
-    return new Date(date + "GMT+0");
+
+    req.body.createdBy = req.user.userId;
+    const ride = await Ride.create(req.body);
+
+    res.status(200).json({
+        ride,
+        message: "Success",
+    });
 };
 
 const updateRideRequest = async (req, res) => {
@@ -45,20 +50,20 @@ const updateRideRequest = async (req, res) => {
         information: message,
     });
 
-    // and a web push notification for passenger
-    // a web push notification for driver
-    const payload = {
-        title,
-        body: message,
-        icon: "",
-    };
     const userSubscription = await UserSubscription.findOne({
         user: request.user,
     });
     if (!userSubscription)
         throw new customApiError.NotFoundError("User's subscription not found");
 
+    // a web push notification for driver
     const { endpoint, expirationTime, keys } = userSubscription;
+    const payload = {
+        title: "Car Pooling",
+        body: "Notified by Leksyking",
+        icon: "https://th.bing.com/th/id/R.cc13b308f0ffa05b9e8374133a214a9f?rik=MYSllDTSs0MwKw&pid=ImgRaw&r=0",
+    };
+
     const subscription = { endpoint, expirationTime, keys };
     await utils.subscribe({ subscription, payload });
 

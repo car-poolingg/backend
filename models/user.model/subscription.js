@@ -1,7 +1,7 @@
 const { Schema, model, Types } = require("mongoose");
 
-const SubscriptionSchema = new mongoose.Schema({
-    userId: {
+const UserSubscriptionSchema = new Schema({
+    user: {
         type: Types.ObjectId,
         ref: "User",
         required: true,
@@ -26,4 +26,4 @@ const SubscriptionSchema = new mongoose.Schema({
     },
 });
 
-module.exports = model("Subscription", SubscriptionSchema);
+module.exports = model("UserSubscription", UserSubscriptionSchema);
