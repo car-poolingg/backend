@@ -8,6 +8,8 @@ const DriverSubscription = require("../../models/driver.model/subscription");
 
 const findRide = async (req, res) => {
     return new Date(date + "GMT+0");
+    // seat functionality
+
     // fetch()
     //     const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
     // const origin = 'Starting Location';
