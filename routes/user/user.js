@@ -9,5 +9,6 @@ const {
 } = require('../../controllers/user.controller/userController');
 
 router.put("update/:userId", userAuthentication, updateUser );
+router.post('/upload',userAuthentication, AddUserImage );
 
 module.exports = router;
