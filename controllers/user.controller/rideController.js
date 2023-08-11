@@ -1,20 +1,24 @@
 const Ride = require("../../models/driver.model/ride");
 const DriverNotification = require("../../models/driver.model/notification");
 const Request = require("../../models/user.model/request");
-const User = require("../../models/user.model/user");
+// const User = require("../../models/user.model/user");
 const customApiError = require("../../errors");
 const utils = require("../../utils");
 const DriverSubscription = require("../../models/driver.model/subscription");
-// const fetch = require("node-fetch");
+const fetch = require("node-fetch");
 
 const findRide = async (req, res) => {
     const { pickup, destination, date, time } = req.body;
+    const maxDistance = 5; // Maximum distance in kilometers
+    const maxTimeDifference =
+        1000 * 60 * 10; /* Maximum time difference allowed in milliseconds */
+    const requiredSeats = 1; /* Number of seats required by passenger */
 
     // Sample driver data
     const drivers = await Ride.find({});
 
-    const availableRides = [];
     // crosscheck  with time and date and available seats
+    const userTimeStamp = getTimeStamps(date, time);
 
     // Bing Maps API key
     const apiKey =
@@ -74,7 +78,7 @@ const findRide = async (req, res) => {
 
     // // Function to match passengers to drivers considering waypoints
     async function matchPassengersToDriversWithWaypoints(drivers) {
-        const matchedRides = [];
+        const availableRides = [];
 
         for (const driver of drivers) {
             const driverRoute = await getRoute(
@@ -91,42 +95,89 @@ const findRide = async (req, res) => {
                 passengerWaypoints
             );
 
+            const driverTimestamp = getTimeStamps(driver.date, driver.time);
+
             for (const waypoint of commonWaypoints) {
-                if (isWithinProximity(driver, waypoint)) {
-                    const matchedRide = {
-                        passenger: req.user.userId,
-                        driver: drivers.createdBy,
-                        pickup,
-                        destination,
-                        waypoint,
-                        date,
-                        time,
-                    };
-                    matchedRides.push(matchedRide);
+                if (
+                    isWithinProximity(driver, waypoint, maxDistance) &&
+                    isWithinTimeWindow(
+                        driverTimestamp,
+                        userTimeStamp,
+                        maxTimeDifference
+                    ) &&
+                    driver.availableSeats >= requiredSeats
+                ) {
                     availableRides.push(driver);
+                    break;
                 }
             }
         }
 
-        return matchedRides;
+        return availableRides;
     }
 
-    // // Function to check if a waypoint is within proximity to a driver
-    function isWithinProximity(driver, waypoint) {
-        // Implement proximity calculation logic here
-        return true; // Return true if within proximity, otherwise false
+    // Function to check if a driver is within proximity of a waypoint
+    function isWithinProximity(driver, waypoint, maxDistance) {
+        const distance = calculateDistance(driver.location, waypoint);
+        return distance <= maxDistance;
+    }
+
+    // Function to check if time difference is within specified threshold
+    function isWithinTimeWindow(departureTime, UserTime, maxTimeDifference) {
+        const timeDifference = Math.abs(departureTime - UserTime);
+        return timeDifference <= maxTimeDifference;
+    }
+
+    function calculateDistance(coord1, coord2) {
+        const R = 6371; // Earth's radius in kilometers
+
+        const lat1 = degToRad(coord1.lat);
+        const lat2 = degToRad(coord2.lat);
+        const lon1 = degToRad(coord1.lng);
+        const lon2 = degToRad(coord2.lng);
+
+        const dlat = lat2 - lat1;
+        const dlon = lon2 - lon1;
+
+        const a =
+            Math.sin(dlat / 2) * Math.sin(dlat / 2) +
+            Math.cos(lat1) *
+                Math.cos(lat2) *
+                Math.sin(dlon / 2) *
+                Math.sin(dlon / 2);
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        const distance = R * c; // Distance in kilometers
+        return distance;
+    }
+
+    function getTimeStamps(dateStr, timeStr) {
+        // Parse the date string and time string
+        const [year, month, day] = dateStr.split("-").map(Number);
+        const [hours, minutes] = timeStr.split(":").map(Number);
+
+        const DateTime = new Date(year, month - 1, day, hours, minutes);
+        return DateTime.getTime(); // Timestamp in milliseconds
+    }
+
+    // Function to convert degrees to radians
+    function degToRad(degrees) {
+        return degrees * (Math.PI / 180);
     }
 
     // Call the matchPassengersToDriversWithWaypoints function
-    const matchedRides = await matchPassengersToDriversWithWaypoints(drivers);
-    // console.log(matchedRides);
+    const availableRides = await matchPassengersToDriversWithWaypoints(drivers);
     // console.log(availableRides);
 
     res.status(200).json({
         availableRides,
-        matchedRides,
         message: "Notification Sent to Driver",
     });
+};
+
+const getRide = async (req, res) => {
+    //populate with driver details
 };
 
 const sendRideRequest = async (req, res) => {
@@ -177,4 +228,5 @@ const sendRideRequest = async (req, res) => {
 module.exports = {
     findRide,
     sendRideRequest,
+    getRide,
 };

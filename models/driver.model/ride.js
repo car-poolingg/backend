@@ -3,12 +3,24 @@ const { Schema, model, Types } = require("mongoose");
 const RideSchema = new Schema(
     {
         location: {
-            type: [Number],
-            required: true,
+            lat: {
+                type: Number,
+                required: true,
+            },
+            lng: {
+                type: Number,
+                required: true,
+            },
         },
         destination: {
-            type: [Number],
-            required: true,
+            lat: {
+                type: Number,
+                required: true,
+            },
+            lng: {
+                type: Number,
+                required: true,
+            },
         },
         date: {
             type: Date,
