@@ -3,11 +3,11 @@ const { Schema, model, Types } = require("mongoose");
 const RideSchema = new Schema(
     {
         location: {
-            type: String,
+            type: [Number],
             required: true,
         },
         destination: {
-            type: String,
+            type: [Number],
             required: true,
         },
         date: {
