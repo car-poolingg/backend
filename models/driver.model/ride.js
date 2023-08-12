@@ -3,15 +3,15 @@ const { Schema, model, Types } = require("mongoose");
 const RideSchema = new Schema(
     {
         location: {
-            type: String,
+            type: [Number],
             required: true,
         },
         destination: {
-            type: String,
+            type: [Number],
             required: true,
         },
         date: {
-            type: Date,
+            type: String,
             required: true,
         },
         time: {
@@ -31,7 +31,9 @@ const RideSchema = new Schema(
             required: true,
         },
     },
-    { timestamps: true }
+    {
+        timestamps: true,
+    }
 );
 
 module.exports = model("Ride", RideSchema);

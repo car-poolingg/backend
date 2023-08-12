@@ -9,6 +9,10 @@ const subscribe = require("./webPush");
 const createHash = require("./createHash");
 const { checkPermission, driverPermission } = require("./checkPermission");
 const sendSmsOTP = require("./sms");
+const {
+    matchPassengersToDriversWithWaypoints,
+    getTimeStamps,
+} = require("./maps");
 
 module.exports = {
     createTokenUser,
@@ -24,4 +28,6 @@ module.exports = {
     cloudinary,
     sendSmsOTP,
     subscribe,
+    matchPassengersToDriversWithWaypoints,
+    getTimeStamps,
 };

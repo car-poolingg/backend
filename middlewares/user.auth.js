@@ -11,7 +11,8 @@ const userAuthentication = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     const { userId, email, role } = isTokenValid(token);
-    if (role != "passenger")
+
+    if (role !== "passenger")
         throw new customApiError.UnAuthenticatedError(
             "Invalid Authentication: You are not a passenger"
         );
