@@ -1,38 +1,39 @@
 const Ride = require("../../models/driver.model/ride");
 const DriverNotification = require("../../models/driver.model/notification");
 const Request = require("../../models/user.model/request");
-const User = require("../../models/user.model/user");
+// const User = require("../../models/user.model/user");
 const customApiError = require("../../errors");
 const utils = require("../../utils");
 const DriverSubscription = require("../../models/driver.model/subscription");
 
 const findRide = async (req, res) => {
-    return new Date(date + "GMT+0");
-    // seat functionality
+    const { pickup, destination, date, time } = req.body;
 
-    // fetch()
-    //     const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
-    // const origin = 'Starting Location';
-    // const destination = 'Destination Location';
+    const rides = await Ride.find({});
+    const userTimeStamp = utils.getTimeStamps(date, time);
 
-    // // Construct the URL for the Directions API request
-    // )    // const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&key=${apiKey}`;
+    const availableRides = await utils.matchPassengersToDriversWithWaypoints(
+        rides,
+        pickup,
+        destination,
+        userTimeStamp
+    );
 
-    // // Call the Google Maps Directions API using Fetch API
-    // fetch(apiUrl)
-    //   .then((response) => {
-    //     if (!response.ok) {
-    //       throw new Error('Network response was not ok.');
-    //     }user
-    //     return response.json();
-    //   })
-    //   .then((data) => {
-    //     // Process the Directions API response data here
-    //     console.log(data);
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error fetching data:', error);
-    //   });
+    res.status(200).json({
+        message: "Available Rides",
+        availableRides,
+    });
+};
+
+const getRide = async (req, res) => {
+    const { id: rideId } = req.params;
+    const ride = await Ride.findById(rideId).populate({
+        path: "createdBy",
+        select: "-password -createdAt -updatedAt -__v",
+    });
+    if (!ride) throw new customApiError.NotFoundError("Invalid Ride");
+
+    res.status(200).json({ ride, message: "Ride Found" });
 };
 
 const sendRideRequest = async (req, res) => {
@@ -83,4 +84,5 @@ const sendRideRequest = async (req, res) => {
 module.exports = {
     findRide,
     sendRideRequest,
+    getRide,
 };
