@@ -1,7 +1,6 @@
 const Ride = require("../../models/driver.model/ride");
 const DriverNotification = require("../../models/driver.model/notification");
 const Request = require("../../models/user.model/request");
-// const User = require("../../models/user.model/user");
 const customApiError = require("../../errors");
 const utils = require("../../utils");
 const DriverSubscription = require("../../models/driver.model/subscription");
