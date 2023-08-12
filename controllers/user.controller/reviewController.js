@@ -16,4 +16,21 @@ const createReview = async (req, res) => {
     res.status(201).json({ review, msg: "Review submitted successfully." });
 };
 
-module.exports = { createReview };
+const getDriverReview = async (req, res) => {
+    const driverId = req.params.driverId;
+    try{
+        const reviews = await Review.findById(driverId)
+        if (!reviews) throw new customApiError.NotFoundError("Reviews not found.");
+        return res.status(200).send(reviews)
+
+        
+    }catch(error){
+        throw new customApiError.BadRequestError("Internal Server Error");
+    }
+
+}
+
+module.exports = { 
+    createReview,
+    getDriverReview,
+ };
