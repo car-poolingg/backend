@@ -27,6 +27,7 @@
         "express-session": "^1.17.3",
         "http-status-codes": "^2.2.0",
         "jsonwebtoken": "^9.0.1",
+        "mongodb": "^5.7.0",
         "mongoose": "^7.4.0",
         "node-fetch": "^2.6.12",
         "passport": "^0.6.0",
