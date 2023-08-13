@@ -16,4 +16,11 @@ const uploadImage = async (file, userId) => {
     return result;
 };
 
+
+
+
+
+
+
 module.exports = uploadImage;
+

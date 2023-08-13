@@ -49,6 +49,7 @@ app.use("/api/v1/notify", require("./routes/user/notifications"));
 app.use("/api/v1/driver-auth", require("./routes/driver/auth"));
 app.use("/api/v1/driver-ride", require("./routes/driver/ride"));
 app.use("/api/v1/driver-subscribe", require("./routes/driver/subscription"));
+app.use("/api/v1/driver", require("./routes/driver/driver"));
 app.use("/api/v1/driver-notify", require("./routes/driver/notifications"));
 
 app.use("/", (req, res) => {
