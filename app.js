@@ -44,11 +44,12 @@ app.use("/api/v1/ride", require("./routes/user/ride"));
 app.use("/api/v1/subscribe", require("./routes/user/subscription"));
 app.use("/api/v1/user", require("./routes/user/user"));
 
-
 // Driver Routes
 app.use("/api/v1/driver-auth", require("./routes/driver/auth"));
 app.use("/api/v1/driver-ride", require("./routes/driver/ride"));
 app.use("/api/v1/driver-subscribe", require("./routes/driver/subscription"));
+app.use("/api/v1/driver", require("./routes/driver/driver"));
+
 
 app.use("/", (req, res) => {
     res.send("Welcome to OAU Car-Pooling...");
