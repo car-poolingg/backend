@@ -3,35 +3,16 @@ const utils = require("../../utils");
 const customApiError = require("../../errors");
 
 const AddDriverDocument = async (req, res) => {
-    const driverLicense = req.files.dlicense.tempFilePath;
-    const driverLicenseNo = req.files.dlicenseNo.tempFilePath;
-    const driverPhoto = req.files.dphoto.tempFilePath;
-    const frontViewCarPhoto = req.files.fViewPhoto.tempFilePath;
-    const backViewCarPhoto = req.files.bViewPhoto.tempFilePath;
-    const intCarPhoto = req.files.interiorPhoto.tempFilePath;
-    const vehicleColor = req.body.vehicleColor;
-    const vehicleYear = req.body.vehicleYear;
-    const VehicleMM = req.body.VehicleMM;
-    const licensePlate = req.body.licensePlate;
-    const driverInsurance = req.files.dinsurance.tempFilePath;
-    const driverInspection = req.files.dinspection.tempFilePath;
+    const { dlicense, dphoto, fViewPhoto, bViewPhoto, interiorPhoto, dinsurance, dinspection } = req.files;
+    const { vehicleColor, vehicleYear, VehicleMM, licensePlate, dlicenseNo } = req.body;
 
-    
-
-
-
-
-
-    const uploadedImage = await utils.uploadImage(driverLicense, req.driver.driverId);
-    const uploadedDPhoto = await utils.uploadImage(driverPhoto, req.driver.driverId);
-    const uploadedFrontPhoto = await utils.uploadImage(frontViewCarPhoto, req.driver.driverId);
-    const uploadedBackPhoto = await utils.uploadImage(backViewCarPhoto, req.driver.driverId);
-    const uploadedIntPhoto = await utils.uploadImage(intCarPhoto, req.driver.driverId);
-    const uploadedDriverInsurance =  await utils.uploadImage(driverInsurance, req.driver.driverId);
-    const uploadedDriverInspection =  await utils.uploadImage(driverInspection, req.driver.driverId);
-
-    console.log(uploadedImage);
-    
+    const uploadedImage = await utils.uploadImage(dlicense.path, req.driver.driverId);
+    const uploadedDPhoto = await utils.uploadImage(dphoto.path, req.driver.driverId);
+    const uploadedFrontPhoto = await utils.uploadImage(fViewPhoto.path, req.driver.driverId);
+    const uploadedBackPhoto = await utils.uploadImage(bViewPhoto.path, req.driver.driverId);
+    const uploadedIntPhoto = await utils.uploadImage(interiorPhoto.path, req.driver.driverId);
+    const uploadedDriverInsurance = await utils.uploadImage(dinsurance.path, req.driver.driverId);
+    const uploadedDriverInspection = await utils.uploadImage(dinspection.path, req.driver.driverId);
 
     if (!uploadedImage) new customApiError.NotFoundError("Error uploading image");
     if (!uploadedDPhoto) new customApiError.NotFoundError("Error uploading image");
@@ -41,13 +22,9 @@ const AddDriverDocument = async (req, res) => {
     if (!uploadedDriverInsurance) new customApiError.NotFoundError("Error uploading image");
     if (!uploadedDriverInspection) new customApiError.NotFoundError("Error uploading image");
 
-
-
-
-
     const driver = await Driver.findById(req.driver.driverId).select("-password");
     driver.driverLicense = uploadedImage.secure_url;
-    driver.driverPhoto =  uploadedDPhoto.secure_url;
+    driver.driverPhoto = uploadedDPhoto.secure_url;
     driver.frontViewCarPhoto = uploadedFrontPhoto.secure_url;
     driver.backViewCarPhoto = uploadedBackPhoto.secure_url;
     driver.intCarPhoto = uploadedIntPhoto.secure_url;
@@ -57,16 +34,17 @@ const AddDriverDocument = async (req, res) => {
     driver.VehicleMM = VehicleMM;
     driver.licensePlate = licensePlate;
     driver.vehicleColor = vehicleColor;
-    driver.driverLicenseNo = driverLicenseNo;
-
+    driver.driverLicenseNo = dlicenseNo;
 
     await driver.save();
-    console.log(driver.driverLicense)
 
-    return res.status(200).json({ driver });
+    // send credentials to mail
+
+    return res.status(200).json({
+        driver,
+        message: "Your documents have been uploaded successfully.",
+    });
 };
-
-
 
 const updateDriver = async (req, res) => {
     const payload = req.body;

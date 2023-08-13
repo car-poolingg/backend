@@ -10,17 +10,11 @@ cloudinary.config({
 const uploadImage = async (file, userId) => {
     const result = await cloudinary.uploader.upload(file, {
         public_id: `car-poolingg/${userId}/photo`,
-        transformation: [{ gravity: "face", height: 400, width: 400, crop: "crop" }],
+        folder: "car-poolingg",
+        transformation: [{ gravity: "face", height: 400, width: 400, crop: "fill" }],
     });
 
     return result;
 };
 
-
-
-
-
-
-
 module.exports = uploadImage;
-

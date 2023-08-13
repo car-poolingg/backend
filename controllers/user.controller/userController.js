@@ -3,7 +3,7 @@ const utils = require("../../utils");
 const customApiError = require("../../errors");
 
 const AddUserImage = async (req, res) => {
-    const fileStr = req.files.photo.tempFilePath;
+    const fileStr = req.files.photo.path;
 
     const uploadedImage = await utils.uploadImage(fileStr, req.user.userId);
 

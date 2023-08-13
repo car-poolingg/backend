@@ -5,7 +5,7 @@ const path = require("path");
 
 const app = express();
 const cors = require("cors");
-const fileupload = require("express-fileupload");
+const expressFormidable = require("express-formidable-v2");
 const session = require("express-session");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, "client")));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(fileupload({ useTempFiles: true }));
+app.use(expressFormidable({ multiples: true }));
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
