@@ -1,5 +1,4 @@
-const publicVapidKey =
-    "BMmxp0ySU0JPd6jEG3LV6wA1sJwZul1hUBDhRkBV4kf9fNH0IPA6E1O89chSW-0Jf-kCvszlYD8zdF8r6yac920";
+const publicVapidKey = "BMmxp0ySU0JPd6jEG3LV6wA1sJwZul1hUBDhRkBV4kf9fNH0IPA6E1O89chSW-0Jf-kCvszlYD8zdF8r6yac920";
 
 // Check for service worker
 if ("serviceWorker" in navigator) {
@@ -27,7 +26,7 @@ async function send() {
 
     // Send Push Notification
     console.log("Sending Push...");
-    await fetch("/api/v1/subscribe", {
+    await fetch("/api/v1/driver-subscribe", {
         method: "POST",
         body: JSON.stringify(subscription),
         headers: {
@@ -40,9 +39,7 @@ async function send() {
 
 function urlBase64ToUint8Array(base64String) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding)
-        .replace(/\-/g, "+")
-        .replace(/_/g, "/");
+    const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
 
     const rawData = window.atob(base64);
     const outputArray = new Uint8Array(rawData.length);

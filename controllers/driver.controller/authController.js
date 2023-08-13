@@ -36,9 +36,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const { phone, password } = req.body;
     if (!phone || !password) {
-        throw new customApiError.BadRequestError(
-            "Please enter your phone number and password"
-        );
+        throw new customApiError.BadRequestError("Please enter your phone number and password");
     }
     const driver = await Driver.findOne({ phone });
     if (!driver) {
@@ -50,11 +48,9 @@ const login = async (req, res) => {
     }
 
     if (!driver.isVerified.phone) {
-        throw new customApiError.UnAuthenticatedError(
-            "Your phone number hasn't been verified yet!"
-        );
+        throw new customApiError.UnAuthenticatedError("Your phone number hasn't been verified yet!");
     }
-    const tokenDriver = utils.createTokenUser(driver);
+    const tokenDriver = utils.createTokenDriver(driver);
     const token = utils.createJWT(tokenDriver);
 
     res.status(200).json({ driver: tokenDriver, token });
@@ -68,10 +64,7 @@ const verifyPhone = async (req, res) => {
 
     let currentDay = new Date(Date.now());
 
-    if (
-        driver.verificationToken === utils.createHash(token) &&
-        driver.tokenExpirationDate > currentDay
-    ) {
+    if (driver.verificationToken === utils.createHash(token) && driver.tokenExpirationDate > currentDay) {
         driver.isVerified.phone = true;
         driver.verified = new Date(Date.now());
         driver.verificationToken = "";
@@ -87,9 +80,7 @@ const verifyPhone = async (req, res) => {
 const forgotPassword = async (req, res) => {
     const { phone } = req.body;
     if (!phone) {
-        throw new customApiError.BadRequestError(
-            "Please provide your account's phone number"
-        );
+        throw new customApiError.BadRequestError("Please provide your account's phone number");
     }
     const driver = await Driver.findOne({ phone });
     if (!driver) {
@@ -122,9 +113,7 @@ const resetPassword = async (req, res) => {
         throw new customApiError.NotFoundError("Driver does not exist");
     }
     if (!password) {
-        throw new customApiError.BadRequestError(
-            "Please enter your new password"
-        );
+        throw new customApiError.BadRequestError("Please enter your new password");
     }
 
     driver.password = password;
@@ -162,10 +151,7 @@ const verifyPasswordToken = async (req, res) => {
     if (!driver) throw new customApiError.UnAuthenticatedError("Invalid email");
 
     let currentDay = new Date(Date.now());
-    if (
-        driver.passwordToken === utils.createHash(token) &&
-        driver.passwordTokenExpirationDate > currentDay
-    ) {
+    if (driver.passwordToken === utils.createHash(token) && driver.passwordTokenExpirationDate > currentDay) {
         driver.passwordToken = "";
         driver.passwordTokenExpirationDate = null;
         await driver.save();

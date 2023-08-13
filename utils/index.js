@@ -1,4 +1,5 @@
 const createTokenUser = require("./createTokenUser");
+const createTokenDriver = require("./createTokenDriver");
 const { isTokenValid, createJWT } = require("./jwt");
 const sendVerificationEmail = require("./sendVerificationMail");
 const sendResetPasswordEmail = require("./sendResetPasswordMail");
@@ -13,6 +14,7 @@ const { matchPassengersToDriversWithWaypoints, getTimeStamps } = require("./maps
 
 module.exports = {
     createTokenUser,
+    createTokenDriver,
     isTokenValid,
     createJWT,
     sendVerificationEmail,
