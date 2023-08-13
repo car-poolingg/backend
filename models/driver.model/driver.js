@@ -55,9 +55,6 @@ const DriverSchema = new Schema(
         licensePlate: {
             type: String,
         },
-        vehicleColor: {
-            type: String,
-        },
         driverLicenseNo: {
             type: String,
         },
@@ -67,13 +64,19 @@ const DriverSchema = new Schema(
         driverPhoto: {
             type: String,
         },
-        extCarPhoto: {
+        frontViewCarPhoto: {
+            type: String,
+        },
+        backViewCarPhoto: {
             type: String,
         },
         intCarPhoto: {
             type: String,
         },
-        vehicleColor: {
+        driverInsurance: {
+            type: String,
+        },
+        driverInspection: {
             type: String,
         },
         averageRating: {
