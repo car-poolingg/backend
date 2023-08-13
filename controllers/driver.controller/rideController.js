@@ -8,10 +8,10 @@ const Request = require("../../models/user.model/request");
 const UserSubscription = require("../../models/user.model/subscription");
 
 const postRide = async (req, res) => {
-    const driver = await Driver.findById(req.user.userId);
+    const driver = await Driver.findById(req.driver.driverId);
     utils.driverPermission(req.user, driver);
 
-    req.body.createdBy = req.user.userId;
+    req.body.createdBy = req.driver.driverId;
     const ride = await Ride.create(req.body);
 
     res.status(200).json({
@@ -22,18 +22,18 @@ const postRide = async (req, res) => {
 
 const updateRideRequest = async (req, res) => {
     const {
-        user: { userId },
+        user: { driverId },
         params: { id: NotificationId },
         query: { status },
         body: { title },
     } = req;
 
-    const driver = await Driver.findById(userId);
-    utils.driverPermission(req.user, driver);
+    const driver = await Driver.findById(driverId);
+    utils.driverPermission(req.driver, driver);
 
     const driverNotification = await DriverNotification.findOne({
         _id: NotificationId,
-        driver: userId,
+        driver: driverId,
     });
     driverNotification.status = status;
     await driverNotification.save();
@@ -53,8 +53,7 @@ const updateRideRequest = async (req, res) => {
     const userSubscription = await UserSubscription.findOne({
         user: request.user,
     });
-    if (!userSubscription)
-        throw new customApiError.NotFoundError("User's subscription not found");
+    if (!userSubscription) throw new customApiError.NotFoundError("User's subscription not found");
 
     // a web push notification for driver
     const { endpoint, expirationTime, keys } = userSubscription;
