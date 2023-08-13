@@ -4,17 +4,13 @@ const subscribe = async (req, res) => {
     const { endpoint, expirationTime, keys } = req.body;
 
     let subscription = await DriverSubscription.find({
-        driver: req.user.userId,
+        driver: req.driver.driverId,
     });
     if (subscription) {
-        subscription = await DriverSubscription.findOneAndUpdate(
-            { driver: req.user.userId },
-            req.body,
-            { new: true, runValidators: true }
-        );
+        subscription = await DriverSubscription.findOneAndUpdate({ driver: req.driver.driverId }, req.body, { new: true, runValidators: true });
     } else {
         subscription = await DriverSubscription.create({
-            driver: req.user.userId,
+            driver: req.driver.driverId,
             endpoint,
             expirationTime,
             keys,

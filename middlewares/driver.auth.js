@@ -8,14 +8,11 @@ const driverAuthentication = async (req, res, next) => {
     }
     const token = authHeader.split(" ")[1];
 
-    const { userId, email, role } = isTokenValid(token);
+    const { driverId, email, role } = isTokenValid(token);
 
-    if (role !== "driver")
-        throw new customApiError.UnAuthenticatedError(
-            "Invalid Authentication: You are not a driver"
-        );
+    if (role !== "driver") throw new customApiError.UnAuthenticatedError("Invalid Authentication: You are not a driver");
 
-    req.user = { userId, email, role };
+    req.driver = { driverId, email, role };
 
     return next();
 };
