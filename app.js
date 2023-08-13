@@ -43,11 +43,13 @@ app.use("/api/v1/review", require("./routes/user/review"));
 app.use("/api/v1/ride", require("./routes/user/ride"));
 app.use("/api/v1/subscribe", require("./routes/user/subscription"));
 app.use("/api/v1/user", require("./routes/user/user"));
+app.use("/api/v1/notify", require("./routes/user/notifications"));
 
 // Driver Routes
 app.use("/api/v1/driver-auth", require("./routes/driver/auth"));
 app.use("/api/v1/driver-ride", require("./routes/driver/ride"));
 app.use("/api/v1/driver-subscribe", require("./routes/driver/subscription"));
+app.use("/api/v1/driver-notify", require("./routes/driver/notifications"));
 
 app.use("/", (req, res) => {
     res.send("Welcome to OAU Car-Pooling...");
