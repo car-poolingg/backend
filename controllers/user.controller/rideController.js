@@ -11,12 +11,7 @@ const findRide = async (req, res) => {
     const rides = await Ride.find({});
     const userTimeStamp = utils.getTimeStamps(date, time);
 
-    const availableRides = await utils.matchPassengersToDriversWithWaypoints(
-        rides,
-        pickup,
-        destination,
-        userTimeStamp
-    );
+    const availableRides = await utils.matchPassengersToDriversWithWaypoints(rides, pickup, destination, userTimeStamp);
 
     res.status(200).json({
         message: "Available Rides",
@@ -47,10 +42,7 @@ const sendRideRequest = async (req, res) => {
     const driverSubscription = await DriverSubscription.findOne({
         driver: ride.createdBy,
     });
-    if (!driverSubscription)
-        throw new customApiError.NotFoundError(
-            "Driver's subscription not found"
-        );
+    if (!driverSubscription) throw new customApiError.NotFoundError("Driver's subscription not found");
 
     const request = await Request.create({
         ride: rideId,
@@ -67,7 +59,7 @@ const sendRideRequest = async (req, res) => {
     const { endpoint, expirationTime, keys } = driverSubscription;
     const payload = {
         title: "Car Pooling",
-        body: "Notified by Leksyking",
+        body: "You just got a ride request",
         icon: "https://th.bing.com/th/id/R.cc13b308f0ffa05b9e8374133a214a9f?rik=MYSllDTSs0MwKw&pid=ImgRaw&r=0",
     };
     const subscription = { endpoint, expirationTime, keys };
