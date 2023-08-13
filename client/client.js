@@ -6,7 +6,7 @@ if ("serviceWorker" in navigator) {
 }
 
 let token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGM4ODlhYmU1ZmY4YjdhN2NjNDgwMWUiLCJlbWFpbCI6ImdiZW1pbGVrZW9ndW5kaXBlMDdAZ21haWwuY29tIiwicm9sZSI6InBhc3NlbmdlciIsImlhdCI6MTY5MTE1NTQ5MSwiZXhwIjoxNjkzNzQ3NDkxfQ.dXzM2EfaU79ht0afTdXFY-6zlUFK5bKp17FpU9Z5X0w";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkcml2ZXJJZCI6IjY0ZDkwZmMxNzNjZDAzNTQyZDNlZTY4YSIsImVtYWlsIjoiZ2JlbWlsZWtlb2d1bmRpcGUwN0BnbWFpbC5jb20iLCJyb2xlIjoiZHJpdmVyIiwiaWF0IjoxNjkxOTQ2OTgwLCJleHAiOjE2OTQ1Mzg5ODB9.O7ro0OGfsHLdq8jQQxqDaE7RsC_Om9s24sa2MC1TuXY";
 // Register SW, Register Push, Send Push
 async function send() {
     // Register Service Worker

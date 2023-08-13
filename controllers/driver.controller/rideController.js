@@ -9,7 +9,7 @@ const UserSubscription = require("../../models/user.model/subscription");
 
 const postRide = async (req, res) => {
     const driver = await Driver.findById(req.driver.driverId);
-    utils.driverPermission(req.user, driver);
+    utils.driverPermission(req.driver, driver);
 
     req.body.createdBy = req.driver.driverId;
     const ride = await Ride.create(req.body);
@@ -21,6 +21,7 @@ const postRide = async (req, res) => {
 };
 
 const updateRideRequest = async (req, res) => {
+    // if accept, reduce no of available seats for the ride
     const {
         user: { driverId },
         params: { id: NotificationId },
