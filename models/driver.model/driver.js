@@ -4,7 +4,7 @@ const { genSalt, compare, hash } = require("bcryptjs");
 
 const DriverSchema = new Schema(
     {
-        phone: {
+        phoneNo: {
             type: String,
             required: true,
             unique: true,
@@ -26,6 +26,14 @@ const DriverSchema = new Schema(
             type: String,
             required: true,
         },
+        state: {
+            type: String,
+            required: true,
+        },
+        homeAddress: {
+            type: String,
+            required: true,
+        },
         password: {
             type: String,
             required: true,
@@ -39,6 +47,10 @@ const DriverSchema = new Schema(
         gender: {
             type: String,
             enum: ["male", "female"],
+        },
+        dateOfBirth: {
+            type: String,
+            required: true,
         },
         description: {
             type: String,
