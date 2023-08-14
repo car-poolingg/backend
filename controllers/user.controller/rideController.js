@@ -21,10 +21,12 @@ const findRide = async (req, res) => {
 
 const getRide = async (req, res) => {
     const { id: rideId } = req.params;
-    const ride = await Ride.findById(rideId).populate({
-        path: "createdBy",
-        select: "-password -createdAt -updatedAt -__v",
-    });
+    const ride = await Ride.findById(rideId)
+        .populate({
+            path: "createdBy",
+            select: "-password -createdAt -updatedAt -__v",
+        })
+        .populate("reviews");
     if (!ride) throw new customApiError.NotFoundError("Invalid Ride");
 
     res.status(200).json({ ride, message: "Ride Found" });

@@ -6,7 +6,7 @@ if ("serviceWorker" in navigator) {
 }
 
 let token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkcml2ZXJJZCI6IjY0ZDkwZmMxNzNjZDAzNTQyZDNlZTY4YSIsImVtYWlsIjoiZ2JlbWlsZWtlb2d1bmRpcGUwN0BnbWFpbC5jb20iLCJyb2xlIjoiZHJpdmVyIiwiaWF0IjoxNjkxOTQ2OTgwLCJleHAiOjE2OTQ1Mzg5ODB9.O7ro0OGfsHLdq8jQQxqDaE7RsC_Om9s24sa2MC1TuXY";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NGM4ODlhYmU1ZmY4YjdhN2NjNDgwMWUiLCJlbWFpbCI6ImdiZW1pbGVrZW9ndW5kaXBlMDdAZ21haWwuY29tIiwicm9sZSI6InBhc3NlbmdlciIsImlhdCI6MTY5MTk2ODU5MSwiZXhwIjoxNjk0NTYwNTkxfQ.cap8TSlo0bu73qJzcPUPNF1UQV2VV2KJR-5LN_r-Wt4";
 // Register SW, Register Push, Send Push
 async function send() {
     // Register Service Worker
@@ -26,7 +26,7 @@ async function send() {
 
     // Send Push Notification
     console.log("Sending Push...");
-    await fetch("/api/v1/driver-subscribe", {
+    await fetch("/api/v1/subscribe", {
         method: "POST",
         body: JSON.stringify(subscription),
         headers: {

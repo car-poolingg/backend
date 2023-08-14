@@ -6,7 +6,7 @@ const subscribe = async (req, res) => {
     let subscription = await UserSubscription.findOne({
         user: req.user.userId,
     });
-    if (!subscription) {
+    if (subscription) {
         subscription = await UserSubscription.findOneAndUpdate({ user: req.user.userId }, req.body, { new: true, runValidators: true });
     } else {
         subscription = await UserSubscription.create({
