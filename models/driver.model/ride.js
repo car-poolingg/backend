@@ -33,7 +33,16 @@ const RideSchema = new Schema(
     },
     {
         timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
     }
 );
+
+RideSchema.virtual("reviews", {
+    ref: "Review",
+    foreignField: "driver",
+    localField: "createdBy",
+    justOne: true,
+});
 
 module.exports = model("Ride", RideSchema);

@@ -21,16 +21,20 @@ const postRide = async (req, res) => {
 };
 
 const updateRideRequest = async (req, res) => {
-    // if accept, reduce no of available seats for the ride
     const {
-        user: { driverId },
+        driver: { driverId },
         params: { id: NotificationId },
         query: { status },
-        body: { title },
+        body: { title, rideId },
     } = req;
 
     const driver = await Driver.findById(driverId);
     utils.driverPermission(req.driver, driver);
+
+    if (status === "accept") {
+        const ride = await Ride.findByIdAndUpdate(rideId, { $inc: { availableSeats: -1 } });
+        if (!ride) throw new customApiError.NotFoundError("Invalid Ride");
+    }
 
     const driverNotification = await DriverNotification.findOne({
         _id: NotificationId,
@@ -40,6 +44,7 @@ const updateRideRequest = async (req, res) => {
     await driverNotification.save();
 
     const request = await Request.findById(driverNotification.request);
+
     if (!request) throw new customApiError.NotFoundError("Invalid request");
     request.status = `${status}ed`;
     await request.save();
@@ -54,13 +59,14 @@ const updateRideRequest = async (req, res) => {
     const userSubscription = await UserSubscription.findOne({
         user: request.user,
     });
+
     if (!userSubscription) throw new customApiError.NotFoundError("User's subscription not found");
 
     // a web push notification for driver
     const { endpoint, expirationTime, keys } = userSubscription;
     const payload = {
-        title: "Car Pooling",
-        body: "Notified by Leksyking",
+        title,
+        body: `Ride request ${status}ed`,
         icon: "https://th.bing.com/th/id/R.cc13b308f0ffa05b9e8374133a214a9f?rik=MYSllDTSs0MwKw&pid=ImgRaw&r=0",
     };
 
