@@ -6,12 +6,12 @@ const DriverSchema = new Schema(
     {
         phoneNo: {
             type: String,
-            required: true,
+            // required: true,
             unique: true,
         },
         email: {
             type: String,
-            required: true,
+            // required: true,
             unique: true,
             validate: {
                 validator: validator.isEmail,
@@ -24,15 +24,12 @@ const DriverSchema = new Schema(
         },
         city: {
             type: String,
-            required: true,
         },
         state: {
             type: String,
-            required: true,
         },
         homeAddress: {
             type: String,
-            required: true,
         },
         password: {
             type: String,
@@ -50,7 +47,6 @@ const DriverSchema = new Schema(
         },
         dateOfBirth: {
             type: String,
-            required: true,
         },
         description: {
             type: String,

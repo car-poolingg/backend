@@ -8,7 +8,6 @@ const AddDriverDocument = async (req, res) => {
             lastName, gender, description,email,phoneNo,dateOfBirth,city,state,homeAddress } = req.body;
 
     const uploadedImage = await utils.uploadImage(dlicense.path, req.driver.driverId);
-    // console.log(uploadedImage)
     const uploadedDPhoto = await utils.uploadImage(dphoto.path, req.driver.driverId);
     const uploadedFrontPhoto = await utils.uploadImage(fViewPhoto.path, req.driver.driverId);
     const uploadedBackPhoto = await utils.uploadImage(bViewPhoto.path, req.driver.driverId);
@@ -49,9 +48,7 @@ const AddDriverDocument = async (req, res) => {
     driver.homeAddress = homeAddress;
 
 
-
     await driver.save();
-    // console.log(driver)
 
     // send credentials to mail
 
