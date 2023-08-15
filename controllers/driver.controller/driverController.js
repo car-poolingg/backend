@@ -4,8 +4,7 @@ const customApiError = require("../../errors");
 
 const AddDriverDocument = async (req, res) => {
     const { dlicense, dphoto, fViewPhoto, bViewPhoto, interiorPhoto, dinsurance, dinspection } = req.files;
-    const { vehicleColor, vehicleYear, VehicleMM, licensePlate, dlicenseNo,firstName, 
-            lastName, gender, description,email,phoneNo,dateOfBirth,city,state,homeAddress } = req.fields;
+    const { vehicleColor, vehicleYear, VehicleMM, licensePlate, dlicenseNo, firstName, lastName, gender, description, email, phoneNo, dateOfBirth, city, state, homeAddress } = req.fields;
 
     const uploadedImage = await utils.uploadImage(dlicense.path, req.driver.driverId);
     const uploadedDPhoto = await utils.uploadImage(dphoto.path, req.driver.driverId);
@@ -46,7 +45,6 @@ const AddDriverDocument = async (req, res) => {
     driver.city = city;
     driver.state = state;
     driver.homeAddress = homeAddress;
-
 
     await driver.save();
 

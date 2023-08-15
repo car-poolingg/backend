@@ -6,12 +6,12 @@ const DriverSchema = new Schema(
     {
         phoneNo: {
             type: String,
-            // required: true,
+            required: true,
             unique: true,
         },
         email: {
             type: String,
-            // required: true,
+            required: true,
             unique: true,
             validate: {
                 validator: validator.isEmail,
