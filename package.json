@@ -4,10 +4,6 @@
     "description": "Car-Pooling app backend for OAUSWEP200 project 2021/2022",
     "main": "app.js",
     "scripts": {
-<<<<<<< HEAD
-        "test": "echo \"Error: no test specified\" && exit 1",
-=======
->>>>>>> fd44f25d7899edd7781e7785d080cb646ecbb119
         "start": "node app.js",
         "dev": "nodemon app.js"
     },
