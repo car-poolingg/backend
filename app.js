@@ -53,7 +53,7 @@ app.use("/api/v1/driver", require("./routes/driver/driver"));
 app.use("/api/v1/driver-notify", require("./routes/driver/notifications"));
 
 app.use("/", (req, res) => {
-    res.send("Welcome to OAU Car-Pooling...");
+    res.send("Welcome to OAU Car-Pooling app...");
 });
 app.use(require("./middlewares/notFoundMiddleware"));
 app.use(require("./middlewares/errorHandlerMiddleware"));
