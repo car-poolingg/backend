@@ -5,7 +5,7 @@ const customApiError = require("../../errors");
 const AddDriverDocument = async (req, res) => {
     const { dlicense, dphoto, fViewPhoto, bViewPhoto, interiorPhoto, dinsurance, dinspection } = req.files;
     const { vehicleColor, vehicleYear, VehicleMM, licensePlate, dlicenseNo,firstName, 
-            lastName, gender, description,email,phoneNo,dateOfBirth,city,state,homeAddress } = req.body;
+            lastName, gender, description,email,phoneNo,dateOfBirth,city,state,homeAddress } = req.fields;
 
     const uploadedImage = await utils.uploadImage(dlicense.path, req.driver.driverId);
     const uploadedDPhoto = await utils.uploadImage(dphoto.path, req.driver.driverId);
@@ -59,7 +59,7 @@ const AddDriverDocument = async (req, res) => {
 };
 
 const updateDriver = async (req, res) => {
-    const payload = req.body;
+    const payload = req.fields;
     const driver = await Driver.findByIdAndUpdate({ _id: req.driver.driverId }, { ...payload }, { new: true, runValidators: true }).select("-password");
     if (!driver) throw new customApiError.NotFoundError("Driver not found.");
     return res.status(200).json({ driver });
