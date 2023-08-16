@@ -25,7 +25,7 @@ app.use(
         saveUninitialized: false,
         maxAge: new Date(Date.now() + tenDays),
         store: MongoStore.create({
-            mongoUrl: process.env.DB_CONNECTION_DEV,
+            mongoUrl: process.env.DB_CONNECTION_PROD,
             collectionName: "sessions",
         }),
     })
