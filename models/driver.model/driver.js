@@ -4,14 +4,12 @@ const { genSalt, compare, hash } = require("bcryptjs");
 
 const DriverSchema = new Schema(
     {
-        phoneNo: {
+        phone: {
             type: String,
-            required: true,
             unique: true,
         },
         email: {
             type: String,
-            required: true,
             unique: true,
             validate: {
                 validator: validator.isEmail,

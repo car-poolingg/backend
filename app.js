@@ -14,7 +14,6 @@ const tenDays = 1000 * 60 * 60 * 24 * 30;
 
 // Use Express Middleware
 // Set static path
-app.use(express.static(path.join(__dirname, "client")));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -26,7 +25,7 @@ app.use(
         saveUninitialized: false,
         maxAge: new Date(Date.now() + tenDays),
         store: MongoStore.create({
-            mongoUrl: process.env.DB_CONNECTION_PROD,
+            mongoUrl: process.env.DB_CONNECTION_DEV,
             collectionName: "sessions",
         }),
     })
